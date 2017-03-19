@@ -1,11 +1,10 @@
 #import <Cocoa/Cocoa.h>
-#import "Screen.h"
+#import "NoMouse.h"
 
-int main(int argc, char** argv)
-{
+int main() {
     @autoreleasepool {
-        Screen* screen = [[Screen alloc] init];
-        [[NSApplication sharedApplication] setDelegate:screen];
+        NoMouse* nm = [[NoMouse alloc] init];
+        [[NSApplication sharedApplication] setDelegate:nm];
         [NSApp run];
     }
     return 0;

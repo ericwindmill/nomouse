@@ -1,17 +1,14 @@
 #import <Cocoa/Cocoa.h>
 #import <IOKit/graphics/IOGraphicsLib.h>
-#import "config.h"
 
-@interface Screen : NSObject <NSApplicationDelegate>
+@interface Monitor : NSObject
 
 @property io_service_t service;
 @property CFStringRef key;
 
-- (id)init;
+- (id)initWithDisplayId:(CGDirectDisplayID)displayId;
 - (void)setBright:(float)b;
 - (float)getBright;
 - (void)changeBy:(float)delta;
-- (void)restore;
-- (void)applicationDidFinishLaunching:(NSNotification*)aNotification;
 
 @end

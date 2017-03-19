@@ -1,39 +1,40 @@
-#import "Screen.h"
+#import "NoMouse.h"
 
-@implementation Screen
+@implementation NoMouse
 
-@synthesize service;
-@synthesize key;
+@synthesize monitors;
 
 - (id)init {
     self = [super init];
-    if (self != nil) {
-        self.service = CGDisplayIOServicePort(CGMainDisplayID());
-        self.key = CFSTR(kIODisplayBrightnessKey);
+    if (self == nil) {
+        return nil;
     }
+
+    CGDirectDisplayID ids[MAX_MONITORS];
+    uint32_t count;
+
+    CGGetActiveDisplayList(MAX_MONITORS, ids, &count);
+    if (count > 0) {
+        self.monitors = [[NSMutableArray alloc] init];
+        for (int i = 0; i < count; i++) {
+            [self.monitors addObject:[[Monitor alloc] initWithDisplayId:ids[i]]];
+        }
+    }
+
     return self;
 }
 
-- (void)setBright:(float)b {
-    b = fmin(1.0, fmax(0.0, b));
-    IODisplaySetFloatParameter(self.service, 0, self.key, b);
-}
-
-- (float)getBright {
-    float b = 0;
-    IODisplayGetFloatParameter(self.service, 0, self.key, &b);
-    return b;
-}
-
 - (void)changeBy:(float)delta {
-    [self setBright:[self getBright] + delta];
-};
+    for (Monitor* monitor in monitors) {
+        [monitor changeBy:delta];
+    }
+}
 
 - (void)restore {
     [self changeBy:BRIGHTNESS_INCREMENT];
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+- (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
     [NSTimer scheduledTimerWithTimeInterval:1
                                      target:self
                                    selector:@selector(restore)
